@@ -87,7 +87,7 @@ function prevQuestion() {
 }
 
 function calculateAndSave() {
-    // ======== 第一层保险：提交前必须检查最后一题是否作答 ========
+    // 1. 提交前必须检查最后一题是否作答
     const currentQuestion = questions[currentIndex];
     const currentInputs = currentQuestion.querySelectorAll('input[type="radio"]');
     let isAnswered = false;
@@ -96,13 +96,12 @@ function calculateAndSave() {
     });
 
     if (!isAnswered) {
-        alert("请先选择一个选项再提交！");
-        return; // 发现没答，直接拦截，不执行后续保存逻辑
+        alert("请先选择一个选项再生成数据！");
+        return; 
     }
-    // =========================================================
 
-    recordTime(); // 记录最后一题的完成时间
-
+    // 2. 记录时间并提取所有表单数据
+    recordTime(); 
     const form = document.getElementById('quiz-form');
     const formData = new FormData(form);
     
@@ -113,9 +112,8 @@ function calculateAndSave() {
 
     let totalScore = 0;
     
-    // ======== 第二层保险：计算总分时，把 null 强制转为 0 ========
+    // 计算总分 (把没答的 null 转成 "0")
     for (let i = 1; i <= 9; i++) {
-        // 逻辑运算 || 的意思是：如果左边取不到值(null)，就用右边的 "0"
         const val = formData.get(`q${i}`) || "0"; 
         totalScore += parseInt(val);
     }
@@ -123,9 +121,7 @@ function calculateAndSave() {
     // 计算总用时
     const totalTime = timeData.reduce((a, b) => a + b, 0).toFixed(1);
 
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `<h3>${name}，测评已完成！</h3>`;
-
+    // 3. 拼接要存入二维码的 Excel (CSV) 文本
     let csvRows = [];
     csvRows.push("测试项目,具体数值");
     csvRows.push(`姓名,${name}`);
@@ -137,7 +133,6 @@ function calculateAndSave() {
     csvRows.push(`基础信息填写用时(秒),${timeData[0].toFixed(1)}`);
 
     for (let i = 1; i <= 9; i++) {
-        // 这里提取具体每一题数据时，同样把 null 强制转为 "0"
         const val = formData.get(`q${i}`) || "0";
         csvRows.push(`Q${i}得分,${val}`);
         csvRows.push(`Q${i}用时(秒),${timeData[i].toFixed(1)}`);
@@ -145,13 +140,22 @@ function calculateAndSave() {
 
     const csvContent = csvRows.join("\n");
 
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `PHQ9_${name}_${date}.csv`; 
-    a.click();
-    
-    URL.revokeObjectURL(url);
+    // 4. 界面切换：隐藏问卷表格，显示二维码容器
+    form.style.display = 'none'; 
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = `
+        <h3 style="color: #27ae60;">${name}，测评已完成！感谢您的配合。</h3>
+        <p style="color: #666; font-size: 14px;">请协助工作人员拍摄或扫描下方二维码录入数据：</p>
+        <div id="qrcode" style="display: flex; justify-content: center; margin-top: 30px; margin-bottom: 20px;"></div>
+    `;
+
+    // 5. 核心魔法：召唤 qrcode.js 生成二维码
+    new QRCode(document.getElementById("qrcode"), {
+        text: csvContent,          // 把我们拼接好的表格文字塞进去
+        width: 250,                // 二维码宽度（像素）
+        height: 250,               // 二维码高度（像素）
+        colorDark : "#000000",     // 二维码颜色（纯黑，扫描识别率最高）
+        colorLight : "#ffffff",    // 背景颜色（纯白）
+        correctLevel : QRCode.CorrectLevel.L // 容错级别，L级能在图里塞下最多文字
+    });
 }
