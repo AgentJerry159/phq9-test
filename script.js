@@ -111,51 +111,51 @@ function calculateAndSave() {
     const date = formData.get('testDate');
 
     let totalScore = 0;
-    
-    // 计算总分 (把没答的 null 转成 "0")
     for (let i = 1; i <= 9; i++) {
         const val = formData.get(`q${i}`) || "0"; 
         totalScore += parseInt(val);
     }
 
-    // 计算总用时
     const totalTime = timeData.reduce((a, b) => a + b, 0).toFixed(1);
 
-    // 3. 拼接要存入二维码的 Excel (CSV) 文本
-    let csvRows = [];
-    csvRows.push("测试项目,具体数值");
-    csvRows.push(`姓名,${name}`);
-    csvRows.push(`性别,${gender}`);
-    csvRows.push(`年龄,${age}`);
-    csvRows.push(`填写日期,${date}`);
-    csvRows.push(`总分,${totalScore}`);
-    csvRows.push(`总答题用时(秒),${totalTime}`);
-    csvRows.push(`基础信息填写用时(秒),${timeData[0].toFixed(1)}`);
+    // ==========================================
+    // 3. 核心修改：调整数据顺序，完美避开官方库的 Bug
+    // ==========================================
+    
+    // 【第一步】：先放绝对不会触发 Bug 的纯数字和英文字段
+    let dataArray = [
+        age, date, totalScore, totalTime, timeData[0].toFixed(1)
+    ];
 
+    // 继续推入 9 道题的纯数字得分和耗时
     for (let i = 1; i <= 9; i++) {
-        const val = formData.get(`q${i}`) || "0";
-        csvRows.push(`Q${i}得分,${val}`);
-        csvRows.push(`Q${i}用时(秒),${timeData[i].toFixed(1)}`);
+        dataArray.push(formData.get(`q${i}`) || "0");
+        dataArray.push(timeData[i].toFixed(1));
     }
 
-    const csvContent = csvRows.join("\n");
+    // 【第二步】：将带有中文的字段严格“压轴”，放在数组最后！
+    dataArray.push(gender);
+    dataArray.push(name);
+
+    // 拼接成一行紧凑的字符串，没有任何废话
+    const compactData = dataArray.join(",");
 
     // 4. 界面切换：隐藏问卷表格，显示二维码容器
     form.style.display = 'none'; 
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = `
-        <h3 style="color: #27ae60;">${name}，测评已完成！感谢您的配合。</h3>
+        <h3 style="color: #27ae60;">测评已完成！感谢您的配合。</h3>
         <p style="color: #666; font-size: 14px;">请协助工作人员拍摄或扫描下方二维码录入数据：</p>
         <div id="qrcode" style="display: flex; justify-content: center; margin-top: 30px; margin-bottom: 20px;"></div>
     `;
 
-    // 5. 核心魔法：召唤 qrcode.js 生成二维码
+    // 5. 召唤二维码（由于已经避开了Bug，我们去掉了转码代码，直接输出原装中文）
     new QRCode(document.getElementById("qrcode"), {
-        text: csvContent,          // 把我们拼接好的表格文字塞进去
-        width: 250,                // 二维码宽度（像素）
-        height: 250,               // 二维码高度（像素）
-        colorDark : "#000000",     // 二维码颜色（纯黑，扫描识别率最高）
-        colorLight : "#ffffff",    // 背景颜色（纯白）
-        correctLevel : QRCode.CorrectLevel.L // 容错级别，L级能在图里塞下最多文字
+        text: compactData,         
+        width: 250,                
+        height: 250,               
+        colorDark : "#000000",     
+        colorLight : "#ffffff",    
+        correctLevel : QRCode.CorrectLevel.L // 最低容错，换取最大容量
     });
 }
