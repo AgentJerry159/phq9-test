@@ -1,0 +1,142 @@
+/* ================= 全局基础设置 ================= */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6; 
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center; 
+}
+
+.container {
+    background-color: #ffffff;
+    max-width: 600px; 
+    width: 100%;
+    padding: 30px;
+    border-radius: 10px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+/* ================= 题目切换逻辑 ================= */
+.question {
+    display: none; /* 默认隐藏所有题目/页面 */
+}
+
+.question.active {
+    display: block; /* 只显示激活状态的页面 */
+    animation: fadeIn 0.4s ease-out; 
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.question p {
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+/* ================= 基础信息输入框美化 ================= */
+/* 针对文本框、数字框、日期框统一加点内边距和圆角 */
+input[type="text"], 
+input[type="number"], 
+input[type="date"] {
+    font-family: inherit;
+    font-size: 15px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* 当鼠标点击输入框开始打字时，边框高亮变蓝 */
+input[type="text"]:focus, 
+input[type="number"]:focus, 
+input[type="date"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+/* ================= 单选题选项美化 ================= */
+/* 巧妙利用 :has() 选择器，只让包含单选框的 label 变成大按钮，不影响“姓名”等文字标签 */
+.question label:has(input[type="radio"]) {
+    display: block; 
+    margin-bottom: 12px;
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    transition: all 0.2s ease; 
+}
+
+.question label:has(input[type="radio"]):hover {
+    background-color: #eef2f5;
+    border-color: #d5dfe5;
+}
+
+input[type="radio"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+/* ================= 底部控制按钮 ================= */
+.controls {
+    display: flex;
+    gap: 15px; 
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+button {
+    flex: 1; /* 让按钮平分底部空间 */
+    padding: 14px;
+    background-color: #3498db; 
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+button:active {
+    transform: scale(0.98); /* 点击时轻微缩小的手感 */
+}
+
+/* 上一页按钮颜色变浅，突出主次 */
+#prev-btn {
+    background-color: #95a5a6;
+}
+#prev-btn:hover {
+    background-color: #7f8c8d;
+}
+
+/* ================= 结果显示区 ================= */
+#result {
+    margin-top: 20px;
+    text-align: center;
+    color: #e74c3c; 
+}

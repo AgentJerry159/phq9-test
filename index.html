@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>PHQ-9 测评</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>PHQ-9 抑郁症筛查量表</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">在过去的两周里，你生活中以下症状出现的频率有多少？</p>
+        <form id="quiz-form">
+            
+            <div class="question active">
+                <p style="font-size: 18px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">基本信息</p>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: inline-block; width: 60px;">姓名：</label>
+                    <input type="text" name="userName" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: inline-block; width: 60px;">年龄：</label>
+                    <input type="number" name="userAge" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 80px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: inline-block; width: 60px;">性别：</label>
+                    <label style="display: inline-block; margin-right: 15px;"><input type="radio" name="userGender" value="男" required> 男性</label>
+                    <label style="display: inline-block;"><input type="radio" name="userGender" value="女"> 女性</label>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: inline-block; width: 80px;">填写日期：</label>
+                    <input type="date" name="testDate" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+            </div>
+
+            <div class="question">
+                <p>1. 做事时提不起劲或没有兴趣</p>
+                <label><input type="radio" name="q1" value="0"> 没有 </label>
+                <label><input type="radio" name="q1" value="1"> 有几天 </label>
+                <label><input type="radio" name="q1" value="2"> 一半以上时间 </label>
+                <label><input type="radio" name="q1" value="3"> 几乎每天 </label>
+            </div>
+            
+            <div class="question">
+                <p>2. 感到心情低落、沮丧或绝望</p>
+                 <label><input type="radio" name="q1" value="0"> 没有 </label>
+                <label><input type="radio" name="q1" value="1"> 有几天 </label>
+                <label><input type="radio" name="q1" value="2"> 一半以上时间 </label>
+                <label><input type="radio" name="q1" value="3"> 几乎每天 </label>
+            </div>
+
+            <div class="question">
+                <p>3. 入睡困难、睡不安稳或睡眠过多</p>
+                 <label><input type="radio" name="q1" value="0"> 没有 </label>
+                <label><input type="radio" name="q1" value="1"> 有几天 </label>
+                <label><input type="radio" name="q1" value="2"> 一半以上时间 </label>
+                <label><input type="radio" name="q1" value="3"> 几乎每天 </label>
+            </div>
+
+            <div class="question">
+                <p>4. 感觉疲倦或没有活力</p>
+                 <label><input type="radio" name="q1" value="0"> 没有 </label>
+                <label><input type="radio" name="q1" value="1"> 有几天 </label>
+                <label><input type="radio" name="q1" value="2"> 一半以上时间 </label>
+                <label><input type="radio" name="q1" value="3"> 几乎每天 </label>
+            </div>
+
+            <div class="question">
+                <p>5. 食欲不振或吃太多</p>
+                 <label><input type="radio" name="q1" value="0"> 没有 </label>
+                <label><input type="radio" name="q1" value="1"> 有几天 </label>
+                <label><input type="radio" name="q1" value="2"> 一半以上时间 </label>
+                <label><input type="radio" name="q1" value="3"> 几乎每天 </label>
+            </div>
+
+            <div class="question">
+                <p>6. 觉得自己很糟，或觉得自己很失败，或让自己或家人失望</p>
+                 <label><input type="radio" name="q1" value="0"> 没有 </label>
+                <label><input type="radio" name="q1" value="1"> 有几天 </label>
+                <label><input type="radio" name="q1" value="2"> 一半以上时间 </label>
+                <label><input type="radio" name="q1" value="3"> 几乎每天 </label>
+            </div>
+
+            <div class="question">
+                <p>7. 对事物专注有困难，例如阅读报纸或看电视时不能集中注意力</p>
+                 <label><input type="radio" name="q1" value="0"> 没有 </label>
+                <label><input type="radio" name="q1" value="1"> 有几天 </label>
+                <label><input type="radio" name="q1" value="2"> 一半以上时间 </label>
+                <label><input type="radio" name="q1" value="3"> 几乎每天 </label>
+            </div>
+
+            <div class="question">
+                <p>8. 动作或说话速度缓慢到别人已经觉察？或正好相反，烦躁或坐立不安、动来动去的情况更胜于平常</p>
+                 <label><input type="radio" name="q1" value="0"> 没有 </label>
+                <label><input type="radio" name="q1" value="1"> 有几天 </label>
+                <label><input type="radio" name="q1" value="2"> 一半以上时间 </label>
+                <label><input type="radio" name="q1" value="3"> 几乎每天 </label>
+            </div>
+
+            <div class="question">
+                <p>9. 有不如死掉或用某种方式伤害自己的念头</p>
+                 <label><input type="radio" name="q1" value="0"> 没有 </label>
+                <label><input type="radio" name="q1" value="1"> 有几天 </label>
+                <label><input type="radio" name="q1" value="2"> 一半以上时间 </label>
+                <label><input type="radio" name="q1" value="3"> 几乎每天 </label>
+            </div>
+
+            <div class="controls">
+                <button type="button" id="prev-btn" onclick="prevQuestion()" style="display: none;">上一页</button>
+                <button type="button" id="next-btn" onclick="nextQuestion()">下一页</button>
+                <button type="button" id="submit-btn" onclick="calculateAndSave()" style="display: none;">提交并保存数据</button>
+            </div>
+        </form>
+        <div id="result"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
