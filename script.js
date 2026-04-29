@@ -87,7 +87,7 @@ function prevQuestion() {
 }
 
 function calculateAndSave() {
-    // 1. 提交前必须检查最后一题是否作答
+    // 1. 提交前检查最后一题
     const currentQuestion = questions[currentIndex];
     const currentInputs = currentQuestion.querySelectorAll('input[type="radio"]');
     let isAnswered = false;
@@ -100,10 +100,15 @@ function calculateAndSave() {
         return; 
     }
 
-    // 2. 记录时间并提取所有表单数据
+    // 2. 记录时间并提取数据
     recordTime(); 
     const form = document.getElementById('quiz-form');
     const formData = new FormData(form);
+    // === 窃听器：打印收集到的所有原始数据 ===
+    for(let [key, value] of formData.entries()) {
+        console.log(`抓取到 -> 题目: ${key}, 选项的值: ${value}`);
+    }
+    // ===================================
     
     const name = formData.get('userName');
     const gender = formData.get('userGender');
@@ -112,50 +117,55 @@ function calculateAndSave() {
 
     let totalScore = 0;
     for (let i = 1; i <= 9; i++) {
-        const val = formData.get(`q${i}`) || "0"; 
-        totalScore += parseInt(val);
+        totalScore += parseInt(formData.get(`q${i}`) || "0"); 
     }
 
     const totalTime = timeData.reduce((a, b) => a + b, 0).toFixed(1);
 
     // ==========================================
-    // 3. 核心修改：调整数据顺序，完美避开官方库的 Bug
+    // 3. 构建“一目了然”的纵向排版内容
     // ==========================================
-    
-    // 【第一步】：先放绝对不会触发 Bug 的纯数字和英文字段
-    let dataArray = [
-        age, date, totalScore, totalTime, timeData[0].toFixed(1)
-    ];
+    let displayRows = [];
+    displayRows.push(`【PHQ-9 测评报告】`);
+    displayRows.push(`姓名：${name}`);
+    displayRows.push(`性别：${gender}`);
+    displayRows.push(`年龄：${age}`);
+    displayRows.push(`日期：${date}`);
+    displayRows.push(`总分：${totalScore}`);
+    displayRows.push(`总耗时：${totalTime}秒`);
+    displayRows.push(`基础信息耗时：${timeData[0].toFixed(1)}秒`);
+    displayRows.push(`----------------`);
 
-    // 继续推入 9 道题的纯数字得分和耗时
     for (let i = 1; i <= 9; i++) {
-        dataArray.push(formData.get(`q${i}`) || "0");
-        dataArray.push(timeData[i].toFixed(1));
+        const val = formData.get(`q${i}`) || "0";
+        displayRows.push(`Q${i}得分：${val} (用时:${timeData[i].toFixed(1)}s)`);
     }
 
-    // 【第二步】：将带有中文的字段严格“压轴”，放在数组最后！
-    dataArray.push(gender);
-    dataArray.push(name);
+    // 使用换行符连接，形成纵向文本
+    const readableData = displayRows.join("\n");
 
-    // 拼接成一行紧凑的字符串，没有任何废话
-    const compactData = dataArray.join(",");
-
-    // 4. 界面切换：隐藏问卷表格，显示二维码容器
+    // 4. 界面切换
     form.style.display = 'none'; 
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = `
-        <h3 style="color: #27ae60;">测评已完成！感谢您的配合。</h3>
-        <p style="color: #666; font-size: 14px;">请协助工作人员拍摄或扫描下方二维码录入数据：</p>
-        <div id="qrcode" style="display: flex; justify-content: center; margin-top: 30px; margin-bottom: 20px;"></div>
+        <h3 style="color: #27ae60;">测评已完成！</h3>
+        <p style="color: #666; font-size: 14px;">请扫描下方二维码核对并录入数据：</p>
+        <div style="display: flex; justify-content: center; margin-top: 20px; margin-bottom: 20px;">
+            <canvas id="qrcode-canvas"></canvas>
+        </div>
+        <button type="button" onclick="location.reload()" style="background-color: #95a5a6; width: auto; padding: 10px 20px; margin: 0 auto; display: block;">返回重新填写</button>
     `;
 
-    // 5. 召唤二维码（由于已经避开了Bug，我们去掉了转码代码，直接输出原装中文）
-    new QRCode(document.getElementById("qrcode"), {
-        text: compactData,         
-        width: 250,                
-        height: 250,               
-        colorDark : "#000000",     
-        colorLight : "#ffffff",    
-        correctLevel : QRCode.CorrectLevel.L // 最低容错，换取最大容量
+    // 5. 渲染高清二维码
+    // 这个库会自动处理中文编码，无需额外转码
+    QRCode.toCanvas(document.getElementById('qrcode-canvas'), readableData, {
+        width: 280,
+        margin: 2,
+        errorCorrectionLevel: 'M' // 提高到中等容错，让二维码更健壮
+    }, function (error) {
+        if (error) {
+            console.error(error);
+            alert("二维码生成失败，请检查控制台报错。");
+        }
     });
 }
